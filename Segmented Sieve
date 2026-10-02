@@ -1,0 +1,58 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+vector<long long> simpleSieve(long long limit) {
+    vector<bool> isPrime(limit + 1, true);
+
+    isPrime[0] = isPrime[1] = false;
+
+    for (long long p = 2; p * p <= limit; p++) {
+        if (isPrime[p]) {
+            for (long long x = p * p; x <= limit; x += p) {
+                isPrime[x] = false;
+            }
+        }
+    }
+
+    vector<long long> primes;
+
+    for (long long i = 2; i <= limit; i++) {
+        if (isPrime[i]) {
+            primes.push_back(i);
+        }
+    }
+
+    return primes;
+}
+
+vector<long long> segmentedSieve(long long L, long long R) {
+    long long limit = sqrt(R);
+
+    vector<long long> primes = simpleSieve(limit);
+
+    vector<bool> isPrime(R - L + 1, true);
+
+    for (long long p : primes) {
+        long long start = ((L + p - 1) / p) * p;
+
+        start = max(start, p * p);
+
+        for (long long x = start; x <= R; x += p) {
+            isPrime[x - L] = false;
+        }
+    }
+
+    if (L == 1) {
+        isPrime[0] = false;
+    }
+
+    vector<long long> answer;
+
+    for (long long i = 0; i <= R - L; i++) {
+        if (isPrime[i]) {
+            answer.push_back(L + i);
+        }
+    }
+
+    return answer;
+}
